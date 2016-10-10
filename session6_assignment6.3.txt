@@ -1,0 +1,137 @@
+package session6;
+import java.util.*;
+public class bankingoperations 
+{
+public static void main(String[] args)
+{
+
+	Accountoperations mutex=new Accountoperations();
+   Accountoperations ao=new Accountoperations("First", mutex);  
+	
+   Accountoperations ao1=new Accountoperations("Second", mutex);
+   
+   ao.start();  
+	   
+   ao1.start();
+}
+
+
+}
+
+
+class Accountoperations extends Thread
+{
+	int select=0;
+	double account_number;
+	double amount;
+	double balance=500;
+	double totalBankbalance=10000;
+	Accountoperations mutex;
+	Scanner sc=new Scanner(System.in);
+	
+	Accountoperations()
+	{
+		
+	}
+	
+	
+	Accountoperations(String name,Accountoperations m)
+	{
+		super();		
+		System.out.println(this.getName());
+		this.mutex=m;
+	    
+	    }
+	
+
+	public void getaccnumber()
+	{
+	System.out.println("Enter the account number");
+	double ac_no=sc.nextDouble();
+	}
+	public void totalbankbalance()
+	{
+		System.out.println("Total bank balance"+totalBankbalance);
+	
+	}
+	public void showaccountbalance(double acc_no)
+	{
+		System.out.println("Account balance of account number"+ account_number+" is "+balance+this.getName());
+	}
+	
+	public void deposit(double acc_no,double amount)
+	{
+		balance=balance+amount;
+	
+		System.out.println("Account Balance"+balance);
+		totalBankbalance=totalBankbalance+amount;
+		System.out.println("Total bank balance:"+totalBankbalance);
+	}
+	
+	public void withdraw(double acc_no,double amount)
+	{
+		if(balance-amount>0)
+		{
+	     balance=balance-amount;
+	     System.out.println("Balance in account:"+balance);
+	     totalBankbalance=totalBankbalance-amount;
+	     System.out.println("Total bank balance:" +totalBankbalance);
+	     
+		}
+		else System.out.println("Sorry Withdrawal amount more than or equal to balance avalable");
+    
+		}
+	
+	public void operationstart()
+	{
+	synchronized(mutex)
+	{
+		do
+		{   this.getaccnumber();
+			System.out.println(getName());
+			System.out.println("Menu"+"\n"+"1.Account balance" +"\n"+"2.Deposit"+"\n"+"3.Withdraw" +"\n"+"4.Exit");
+			System.out.println("Enter the operation to be performed");	
+			select=sc.nextInt();
+			
+			if(select==1)
+	        {
+		     System.out.println("You have selected option to view Account balance:");
+		     showaccountbalance(account_number);	     
+	        }
+	        else if(select==2)
+	       {
+		     System.out.println("You have selected option to Deposit amount");
+		     System.out.println("Enter the amount to be deposited");
+		     amount=sc.nextDouble();
+		     deposit(account_number,amount);
+	       }
+
+	        else if(select==3)
+	        {
+		     System.out.println("You have selected option to Withdraw amount");
+		     System.out.println("Enter the amount to be withdrawed:");
+		     amount=sc.nextDouble();
+		     withdraw(account_number, amount);
+	        }
+
+	      else if(select==4)
+	      {
+		   System.out.println("Thank you");
+		   break;
+	       }
+	      else
+		   System.out.println("Enter a valid option");		
+
+		}while(select!=4);
+
+	}
+	}
+
+	public void run()
+	{
+		{
+		this.operationstart();
+		}
+		
+	}
+}
